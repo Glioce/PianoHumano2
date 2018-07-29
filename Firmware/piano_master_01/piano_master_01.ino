@@ -2,13 +2,13 @@
   Versión de hardware: 2
   Versión de firmware: 3
   Hipercubo
-  
+
   Hardware:
     Arduino Nano ATmega328P old bootloader
     LCD
     Botones pulsadores
     Regulador de voltaje
-    
+
   IDE 1.8.2
 */
 
@@ -41,12 +41,18 @@ Tune *tuneList[NUM_TUNES] = {
 
 // Definiciciones =============================================================
 // Definición de pines para la LCD --------------------------------------------
-#define RS 8
-#define EN 9 //veficar!!
-#define D4 4
-#define D5 5
-#define D6 6
-#define D7 7
+//#define LCD_VSS //se conecta directamente a GND
+#define LCD_VDD 2 //se alimenta con este pin
+//#define LCD_V0  //salida de potenciometro
+#define LCD_RS 4
+#define LCD_RW 5 //0 dara write, 1 data read
+#define LCD_EN 6 //active high
+#define LCD_D4 7
+#define LCD_D5 8
+#define LCD_D6 9
+#define LCD_D7 10
+#define LCD_A  11 //alimenta LED
+#define LCD_K  12
 // Definición de pines para los botones ---------------------------------------
 #define BTN_PRE A0 //previo
 #define BTN_SIG A1 //siguiente
@@ -61,7 +67,7 @@ Tune *tuneList[NUM_TUNES] = {
 
 // Varaibles globales =========================================================
 // Objeto lcd -----------------------------------------------------------------
-LiquidCrystal lcd(RS, EN, D4, D5, D6, D7);
+LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 // Registros de botones -------------------------------------------------------
 byte regBtn = 0; //estado actual de los botones
@@ -82,8 +88,19 @@ byte menuIndex[] = {0, 0, 0}; //indices de los elementos seleccionados
 
 //=============================================================================
 void setup() {
-  // Iniciar LCD y puertos de comunicación
+  // Iniciar LCD
+  pinMode(LCD_VDD, OUTPUT); //5V
+  pinMode(LCD_RW, OUTPUT);
+  pinMode(LCD_A, OUTPUT); //5V
+  pinMode(LCD_K, OUTPUT);
+  digitalWrite(LCD_VDD, HIGH); //5V
+  digitalWrite(LCD_RW, LOW);
+  digitalWrite(LCD_A, HIGH); //5V
+  digitalWrite(LCD_K, LOW);
+  delay(50);
   lcd.begin(16, 2); //usar 16 columnas y 2 filas
+
+  // Iniciar puertos de comunicación
   Wire.begin(); //I2C (Master)
 #if DEBUG //si se usa depuración por puerto serial
   Serial.begin(9600); //serial
@@ -127,7 +144,7 @@ void setup() {
     else Serial.println(" NO conectado");
 #endif
   }//fin for()
-  
+
   delay(600);
 }//fin setup()
 
@@ -147,7 +164,7 @@ void botones() { //------------------------------------------------------------
   //Actualizar registros de los botones
   //Las entradas tienen activadas la resistencias pullup, por lo
   //que la presión de un botón se detecta como nivel bajo.
-  
+
   regPrv = regBtn; //nuevo estado previo
   regBtn = ~PINC & 0xF; //estado actual (solo se conservan 4 bits)
   regPrs = regBtn & ~regPrv; //presionados
