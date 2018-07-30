@@ -87,6 +87,7 @@ float frec = calcularFrec( nota );
 //=============================================================================
 void setup() {
   Wire.begin(DIR); //activar bus I2C (Slave)
+  Wire.setClock(10000); //baja velocidad para mayor seguridad
   Wire.onReceive(receiveEvent); //recibe un comando
   Wire.onRequest(requestEvent); //envía estado del sensor
 

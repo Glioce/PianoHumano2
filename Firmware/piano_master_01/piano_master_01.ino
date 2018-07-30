@@ -5,7 +5,7 @@
 
   Hardware:
     Arduino Nano ATmega328P old bootloader
-    LCD
+    LCD 
     Botones pulsadores
     Regulador de voltaje
 
@@ -42,32 +42,32 @@ Tune *tuneList[NUM_TUNES] = {
 // Definiciciones =============================================================
 // Definición de pines para la LCD --------------------------------------------
 //#define LCD_VSS //se conecta directamente a GND
-#define LCD_VDD 2 //se alimenta con este pin
+//#define LCD_VDD 2 //se intentó alimentar con este pin, sin suficente corriente
 //#define LCD_V0  //salida de potenciometro
-#define LCD_RS 4
-#define LCD_RW 5 //0 dara write, 1 data read
+#define LCD_RS 4 //register select
+#define LCD_RW 5 //0 data write, 1 data read
 #define LCD_EN 6 //active high
 #define LCD_D4 7
 #define LCD_D5 8
 #define LCD_D6 9
 #define LCD_D7 10
-#define LCD_A  11 //alimenta LED
-#define LCD_K  12
+#define LCD_A  11 //5V LED
+#define LCD_K  12 //GND LED
 // Definición de pines para los botones ---------------------------------------
 #define BTN_PRE A0 //previo
 #define BTN_SIG A1 //siguiente
 #define BTN_SEL A2 //seleccionar
 #define BTN_CAN A3 //cancelar
 // Los botones se leen utilizando la variable PINC
-// Número de bit en la variable PINC
-#define BIT_PRE 1;
-#define BIT_SIG 2;
-#define BIT_SEL 3;
-#define BIT_CAN 4;
+// Máscaras de bits para cada botón
+#define BIT_PRE B0001;
+#define BIT_SIG B0010;
+#define BIT_SEL B0100;
+#define BIT_CAN B1000;
 
 // Varaibles globales =========================================================
 // Objeto lcd -----------------------------------------------------------------
-LiquidCrystal lcd(LCD_RS, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
+LiquidCrystal lcd(LCD_RS, LCD_RW, LCD_EN, LCD_D4, LCD_D5, LCD_D6, LCD_D7);
 
 // Registros de botones -------------------------------------------------------
 byte regBtn = 0; //estado actual de los botones
@@ -89,19 +89,15 @@ byte menuIndex[] = {0, 0, 0}; //indices de los elementos seleccionados
 //=============================================================================
 void setup() {
   // Iniciar LCD
-  pinMode(LCD_VDD, OUTPUT); //5V
-  pinMode(LCD_RW, OUTPUT);
   pinMode(LCD_A, OUTPUT); //5V
   pinMode(LCD_K, OUTPUT);
-  digitalWrite(LCD_VDD, HIGH); //5V
-  digitalWrite(LCD_RW, LOW);
   digitalWrite(LCD_A, HIGH); //5V
   digitalWrite(LCD_K, LOW);
-  delay(50);
   lcd.begin(16, 2); //usar 16 columnas y 2 filas
 
   // Iniciar puertos de comunicación
   Wire.begin(); //I2C (Master)
+  Wire.setClock(100000); //baja velocidad para mayor seguridad
 #if DEBUG //si se usa depuración por puerto serial
   Serial.begin(9600); //serial
 #endif
