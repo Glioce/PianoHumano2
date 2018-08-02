@@ -11,10 +11,14 @@
   Nucleo: ATtinyCore 1.1.4 https://github.com/SpenceKonde/ATTinyCore
   El nucleo incluye la función tone() y la biblioteca "Wire" para I2C
   Ultrasónico: NewPing 1.8 http://playground.arduino.cc/Code/NewPing
-  Arduino IDE 1.8.2
+  Arduino IDE 1.8.5 (recomendado)
 
   Para deactivar el RESET
   https://github.com/RalphBacon/ATTiny85_Fuse_Resetter
+
+  Programamdor por defecto (Menú Herramientas --> Programador)
+  AVRISP mkll
+  Programador para ATTiny
 */
 
 // Direccion I2C
@@ -22,11 +26,11 @@
 //las direcciones 0 a 7 están reservadas
 //la frecuencia inicial se calcula a partir de esta dirección
 
-// Definición de pines
+ // Definición de pines
 #define RESET_ACTIVADO 0
-//Existen dos versiones del circuito impreso: En la primera versión el
-//reset externo está desactivado y el pin correspondiente se conecta al
-//LED. En la segunda versión el reset externo está activado y el pin no
+//Se diseñaron dos versiones del circuito impreso:
+//En la primera versión el reset externo está desactivado y ese pin se conecta
+//al LED. En la segunda versión el reset externo está activado y el pin no
 //se utiliza, además las terminales TRIG y ECHO se conectan a un solo pin.
 //La definición anterior permite elegir la configuración para cada versión.
 #if RESET_ACTIVADO// == 1 segunda versión del PCB
