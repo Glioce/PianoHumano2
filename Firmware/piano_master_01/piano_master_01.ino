@@ -60,10 +60,10 @@ Tune *tuneList[NUM_TUNES] = {
 #define BTN_CAN A3 //cancelar
 // Los botones se leen utilizando la variable PINC
 // Máscaras de bits para cada botón
-#define BIT_PRE B0001;
-#define BIT_SIG B0010;
-#define BIT_SEL B0100;
-#define BIT_CAN B1000;
+#define BIT_PRE B0001
+#define BIT_SIG B0010
+#define BIT_SEL B0100
+#define BIT_CAN B1000
 
 // Varaibles globales =========================================================
 // Objeto lcd -----------------------------------------------------------------
