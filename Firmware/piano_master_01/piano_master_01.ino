@@ -1,15 +1,15 @@
 /* PIANO HUMANO (Master)
   Versión de hardware: 2
-  Versión de firmware: 3
+  Versión de firmware: 2.3
   Hipercubo
 
   Hardware:
     Arduino Nano ATmega328P old bootloader
-    LCD 
+    LCD
     Botones pulsadores
     Regulador de voltaje
 
-  IDE 1.8.2
+  Arduino IDE 1.8.2
 */
 
 // Canciones ==================================================================
@@ -116,9 +116,7 @@ void setup() {
   delay(600); //esperar
 
   // Probar teclas
-  //En total son 14 teclas, con direcciones 8 a 21.
-  //Las direcciones de 0 a 7 están reservadas.
-  // En la nueva versión probar con direcciones de 1 a 14 !!
+  //En total son 14 teclas, con direcciones 1 a 14.
   char com = 'T'; //comando tocar
   uint16_t val = 300; //valor 300 ms
   byte *x = (byte *)&val; //manejar los bytes de val separadamente
@@ -127,7 +125,7 @@ void setup() {
   Serial.println(x[1], HEX);
 #endif
 
-  for (byte dir = 8; dir <= 21; dir++) {
+  for (byte dir = 1; dir <= 14; dir++) {
     Wire.beginTransmission(dir); //iniciar buffer
     Wire.write(com); //enviar comando tocar
     Wire.write(x, 2); //enviar tiempo
@@ -176,14 +174,14 @@ void menuPrincipal() { //------------------------------------------------------
     lcd.setCursor(0, 1);
     lcd.print(menuItem[ menuIndex[PRINCIPAL]]);
   }
-  if (regPrs & 1 or regPrs & 2) { //si se presiona BTN_PRE o BTN_SIG
+  if (regPrs & BIT_PRE or regPrs & BIT_SIG) { //si se presiona BTN_PRE o BTN_SIG
     menuIndex[PRINCIPAL] ^= 1; //cambiar indice (0 o 1)
     //lcd.clear();
     //lcd.print("Menu Principal");
     lcd.setCursor(0, 1);
     lcd.print(menuItem[ menuIndex[PRINCIPAL]]);
   }
-  if (regPrs & 4) { //si se presiona BTN_SEL
+  if (regPrs & BIT_SEL) { //si se presiona BTN_SEL
     if (menuIndex[PRINCIPAL] == 0) {//si item "Canciones" seleccionado
       menuState = CANCIONES; //ir al menú CANCIONES
       menuStart = true; //menú acaba de iniciar
@@ -205,7 +203,7 @@ void menuCanciones() { //------------------------------------------------------
     lcd.print(menuIndex[CANCIONES] + 1); lcd.print(" "); //numero de canción
     lcd.print(tuneList[ menuIndex[CANCIONES]] -> name); //nombre de la canción
   }
-  if (regPrs & 1) { //si se presiona BTN_PRE
+  if (regPrs & BIT_PRE) { //si se presiona BTN_PRE
     if (menuIndex[CANCIONES] > 0) //si indice mayor a 0
       menuIndex[CANCIONES] --; //indice anterior
     else
@@ -216,7 +214,7 @@ void menuCanciones() { //------------------------------------------------------
     lcd.print(menuIndex[CANCIONES] + 1); lcd.print(" ");
     lcd.print(tuneList[ menuIndex[CANCIONES]] -> name);
   }
-  if (regPrs & 2) { //si se presiona BTN_SIG
+  if (regPrs & BIT_SIG) { //si se presiona BTN_SIG
     menuIndex[CANCIONES] ++; //indice siguiente
     if (menuIndex[CANCIONES] >= NUM_TUNES) //si pasó del último indice
       menuIndex[CANCIONES] = 0; //indice primero
@@ -226,12 +224,12 @@ void menuCanciones() { //------------------------------------------------------
     lcd.print(menuIndex[CANCIONES] + 1); lcd.print(" ");
     lcd.print(tuneList[ menuIndex[CANCIONES]] -> name);
   }
-  if (regPrs & 4) { //si se presiona BTN_SEL
+  if (regPrs & BIT_SEL) { //si se presiona BTN_SEL
     //Tocar la canción seleccionada
     menuState = TOCANDO;
     menuStart = true;
   }
-  if (regPrs & 8) {//si se presiona BTN_CAN
+  if (regPrs & BIT_CAN) {//si se presiona BTN_CAN
     //Regresar al menú principal
     menuState = PRINCIPAL;
     menuStart = true;
@@ -247,7 +245,7 @@ void menuJuegos() { //---------------------------------------------------------
     lcd.setCursor(0, 1);
     lcd.print("- No hay juegos");
   }
-  if (regPrs & 8) { //si se presiona BTN_CAN
+  if (regPrs & BIT_CAN) { //si se presiona BTN_CAN
     //Regresar al menú principal
     menuState = PRINCIPAL;
     menuStart = true;
@@ -280,8 +278,8 @@ void menuTocando() { //--------------------------------------------------------
   {
     if (millis() >= tBtn) { //si es momento de leer botones
       botones(); //leer botones
-      if (regBtn & 4) pausa ^= 1; //si se presiona BTN_SEL, cambia la pausa
-      if (regBtn & 8) { //si se presiona BTN_CAN
+      if (regBtn & BIT_SEL) pausa ^= 1; //si se presiona BTN_SEL, cambia la pausa
+      if (regBtn & BIT_CAN) { //si se presiona BTN_CAN
         menuState = CANCIONES; //regresar al menú canciones
         return; //salir de esta función
       }
